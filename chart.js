@@ -4,11 +4,11 @@ async function barChart() {
     'https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/GDP-data.json'
   );
   const dataset = initialData.data;
-  const dateParser = d3.timeParse('%Y');
-  const xAccessor = (d) => dateParser(d[0]);
+  const parseTime = d3.timeParse('%Y-%m-%d');
+  const xAccessor = (d) => parseTime(d[0]);
   const yAccessor = (d) => d[1];
 
-
+  console.log(dataset);
   // 2. Draw chart`
   const width = 750;
   let dimensions = {
@@ -33,13 +33,11 @@ async function barChart() {
     .domain(d3.extent(dataset, xAccessor))
     .range([0, dimensions.boundedWidth]);
 
-  // TODO: Fix the d3.max portion of this function
   const yScale = d3
     .scaleLinear()
     .domain([0, d3.max(dataset, yAccessor)])
     .range([dimensions.boundedHeight, 0])
     .nice();
-  
 
   // 3. Create canvas
 
@@ -56,7 +54,7 @@ async function barChart() {
       `translate(${dimensions.margin.left}px, ${dimensions.margin.top}px)`
     );
 
-  const barWidth = dimensions.boundedWidth / (dataset.length)
+  const barWidth = dimensions.boundedWidth / dataset.length;
 
   const barRects = bounds
     .selectAll('rect')
@@ -68,28 +66,31 @@ async function barChart() {
     .attr('width', barWidth)
     .attr('height', (d) => dimensions.boundedHeight - yScale(yAccessor(d)))
     .attr('class', 'bar')
-    .attr('data-date', 'thing')
-    .attr('fill', 'cornflowerblue');
-  
-  // 5. Create axes
-  
-  const xAxisGenerator = d3.axisBottom().scale(xScale).ticks(14);
+    .attr('data-date', (d) => d[0])
+    .attr('data-gdp', (d) => yAccessor(d))
+    .attr('fill', 'cornflowerblue')
+    .append('title')
+    .attr('id', 'tooltip');
 
+  // 5. Create axes
+
+  const xAxisGenerator = d3.axisBottom().scale(xScale).ticks(14);
   const xAxis = bounds
     .append('g')
     .call(xAxisGenerator)
     .attr('id', 'x-axis')
     .style('transform', `translateY(${dimensions.boundedHeight}px)`);
-  
+
   const xAxisLabel = xAxis
     .append('text')
     .attr('x', dimensions.boundedWidth / 2)
     .attr('y', dimensions.margin.bottom - 10)
     .attr('class', 'tick')
+    .text('Year')
     .attr('fill', 'black')
     .style('font-size', '1.4em');
-  
-  const yAxisGenerator = d3.axisLeft().scale(yScale).ticks(9);
+
+  const yAxisGenerator = d3.axisLeft().scale(yScale).ticks(14);
 
   const yAxis = bounds.append('g').attr('id', 'y-axis').call(yAxisGenerator);
 
@@ -97,7 +98,7 @@ async function barChart() {
     .append('text')
     .attr('x', -dimensions.boundedHeight / 2)
     .attr('y', -dimensions.margin.left + 10)
-    .attr('class', 'tick')
+
     .attr('fill', 'black')
     .style('font-size', '1.4em')
     .text('Gross Domestic Product')
