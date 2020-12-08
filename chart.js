@@ -8,7 +8,6 @@ async function barChart() {
   const xAccessor = (d) => parseTime(d[0]);
   const yAccessor = (d) => d[1];
 
-  console.log(dataset);
   // 2. Draw chart`
   const width = 750;
   let dimensions = {
@@ -70,9 +69,22 @@ async function barChart() {
     .attr('data-gdp', (d) => yAccessor(d))
     .attr('fill', 'cornflowerblue')
     .append('title')
-    .attr('id', 'tooltip');
+    .attr('id', 'tooltip')
+    .on('mouseenter', onMouseEnter)
+    .on('mouseleave', onMouseLeave);
+  
+  function onMouseEnter(datum) {
+    d3.select(currentTarget).style('fill', 'purple').html();
+    console.log('entering');
+  }
+
+  function onMouseLeave() {
+    console.log('leaving!');
+  }
 
   // 5. Create axes
+
+
 
   const xAxisGenerator = d3.axisBottom().scale(xScale).ticks(14);
   const xAxis = bounds
@@ -104,6 +116,10 @@ async function barChart() {
     .text('Gross Domestic Product')
     .style('transform', 'rotate(-90deg)')
     .style('text-anchor', 'middle');
+  
+  // const tooltip = d3.select("#tooltip");
+
+
 }
 
 barChart();
