@@ -53,6 +53,12 @@ async function barChart() {
       `translate(${dimensions.margin.left}px, ${dimensions.margin.top}px)`
     );
 
+  const tooltip = d3
+    .select('body')
+    .append('div')
+    .attr('id', 'tooltip')
+    .style('opacity', 0);
+
   const barWidth = dimensions.boundedWidth / dataset.length;
 
   const barRects = bounds
@@ -68,23 +74,24 @@ async function barChart() {
     .attr('data-date', (d) => d[0])
     .attr('data-gdp', (d) => yAccessor(d))
     .attr('fill', 'cornflowerblue')
-    .append('title')
-    .attr('id', 'tooltip')
-    .on('mouseenter', onMouseEnter)
+    .on('mouseover', onMouseOver)
     .on('mouseleave', onMouseLeave);
-  
-  function onMouseEnter(datum) {
-    d3.select(currentTarget).style('fill', 'purple').html();
-    console.log('entering');
+
+  function onMouseOver(d) {
+    tooltip.transition().duration(200).style('opacity', 0.9);
+    tooltip
+      .html('Date: ' + d[0] + '<br> GDP: $ ' + d[1] + ' billion')
+      .style('left', d3.event.pageX + 'px')
+      .style('top', d3.event.pageY - 28 + 'px')
+      .attr('data-date', d[0])
+      .attr('data-gdp', d[1]);
   }
 
   function onMouseLeave() {
-    console.log('leaving!');
+    tooltip.transition().duration(500).style('opacity', 0);
   }
 
   // 5. Create axes
-
-
 
   const xAxisGenerator = d3.axisBottom().scale(xScale).ticks(14);
   const xAxis = bounds
@@ -116,10 +123,8 @@ async function barChart() {
     .text('Gross Domestic Product')
     .style('transform', 'rotate(-90deg)')
     .style('text-anchor', 'middle');
-  
+
   // const tooltip = d3.select("#tooltip");
-
-
 }
 
 barChart();
