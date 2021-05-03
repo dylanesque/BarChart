@@ -1,3 +1,9 @@
+/*
+In the interest of full disclosure, this isn't technically passing all of the tests, but there's an 
+inconsistency noted with user story #10 where the test is asking for a level of strictness that isn't 
+specified in the user stories. See https://github.com/freeCodeCamp/freeCodeCamp/issues/39299 for details.
+ */
+
 async function barChart() {
   // 1. Access data and create accessors for x and y coordinates
   const initialData = await d3.json(
@@ -9,7 +15,7 @@ async function barChart() {
   const yAccessor = (d) => d[1];
 
   // 2. Draw chart`
-  const width = 750;
+  const width = window.innerWidth * 0.9;
   let dimensions = {
     width: width,
     height: width * 0.6,
@@ -57,7 +63,7 @@ async function barChart() {
     .select('body')
     .append('div')
     .attr('id', 'tooltip')
-    .style('opacity', 0);
+    .style('visibility', 'hidden');
 
   const barWidth = dimensions.boundedWidth / dataset.length;
 
@@ -71,14 +77,15 @@ async function barChart() {
     .attr('width', barWidth)
     .attr('height', (d) => dimensions.boundedHeight - yScale(yAccessor(d)))
     .attr('class', 'bar')
-    .attr('data-date', (d) => d[0])
+    .attr('data-date',(d) => d[0])
     .attr('data-gdp', (d) => yAccessor(d))
     .attr('fill', 'cornflowerblue')
     .on('mouseover', onMouseOver)
     .on('mouseleave', onMouseLeave);
 
   function onMouseOver(d) {
-    tooltip.transition().duration(200).style('opacity', 0.9);
+    console.log(d[0])
+    tooltip.transition().duration(200).style('visibility', 'visible');
     tooltip
       .html('Date: ' + d[0] + '<br> GDP: $ ' + d[1] + ' billion')
       .style('left', d3.event.pageX + 'px')
@@ -88,12 +95,12 @@ async function barChart() {
   }
 
   function onMouseLeave() {
-    tooltip.transition().duration(500).style('opacity', 0);
+    tooltip.transition().duration(200).style('visibility', 'hidden');
   }
 
   // 5. Create axes
 
-  const xAxisGenerator = d3.axisBottom().scale(xScale).ticks(14);
+  const xAxisGenerator = d3.axisBottom().scale(xScale).ticks(12);
   const xAxis = bounds
     .append('g')
     .call(xAxisGenerator)
@@ -109,7 +116,7 @@ async function barChart() {
     .attr('fill', 'black')
     .style('font-size', '1.4em');
 
-  const yAxisGenerator = d3.axisLeft().scale(yScale).ticks(14);
+  const yAxisGenerator = d3.axisLeft().scale(yScale).ticks(13);
 
   const yAxis = bounds.append('g').attr('id', 'y-axis').call(yAxisGenerator);
 
@@ -124,7 +131,13 @@ async function barChart() {
     .style('transform', 'rotate(-90deg)')
     .style('text-anchor', 'middle');
 
-  // const tooltip = d3.select("#tooltip");
+    const axis = await document.querySelector('#x-axis');
+  const ticks = await axis.querySelectorAll('.tick');
+
+  for (let i = 0; i < ticks.length; i++) {
+    console.log(ticks[i]);
+    console.log(ticks[i].querySelector('text').innerHTML);
+  }
 }
 
 barChart();
