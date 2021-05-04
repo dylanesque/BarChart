@@ -77,14 +77,13 @@ async function barChart() {
     .attr('width', barWidth)
     .attr('height', (d) => dimensions.boundedHeight - yScale(yAccessor(d)))
     .attr('class', 'bar')
-    .attr('data-date',(d) => d[0])
+    .attr('data-date', (d) => d[0])
     .attr('data-gdp', (d) => yAccessor(d))
     .attr('fill', 'cornflowerblue')
     .on('mouseover', onMouseOver)
     .on('mouseleave', onMouseLeave);
 
   function onMouseOver(d) {
-    console.log(d[0])
     tooltip.transition().duration(200).style('visibility', 'visible');
     tooltip
       .html('Date: ' + d[0] + '<br> GDP: $ ' + d[1] + ' billion')
@@ -111,10 +110,9 @@ async function barChart() {
     .append('text')
     .attr('x', dimensions.boundedWidth / 2)
     .attr('y', dimensions.margin.bottom - 10)
-    .attr('class', 'tick')
-    .text('Year')
     .attr('fill', 'black')
-    .style('font-size', '1.4em');
+    .style('font-size', '1.4em')
+    .text('Years');
 
   const yAxisGenerator = d3.axisLeft().scale(yScale).ticks(13);
 
@@ -124,20 +122,11 @@ async function barChart() {
     .append('text')
     .attr('x', -dimensions.boundedHeight / 2)
     .attr('y', -dimensions.margin.left + 10)
-
     .attr('fill', 'black')
     .style('font-size', '1.4em')
     .text('Gross Domestic Product')
     .style('transform', 'rotate(-90deg)')
     .style('text-anchor', 'middle');
-
-    const axis = await document.querySelector('#x-axis');
-  const ticks = await axis.querySelectorAll('.tick');
-
-  for (let i = 0; i < ticks.length; i++) {
-    console.log(ticks[i]);
-    console.log(ticks[i].querySelector('text').innerHTML);
-  }
 }
 
 barChart();
