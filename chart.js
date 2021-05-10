@@ -15,10 +15,10 @@ async function barChart() {
   const yAccessor = (d) => d[1];
 
   // 2. Draw chart`
-  const width = window.innerWidth * 0.9;
+  const width = window.innerWidth * 0.8;
   let dimensions = {
     width: width,
-    height: width * 0.6,
+    height: width * 0.5,
     margin: {
       top: 40,
       right: 10,
@@ -36,7 +36,7 @@ async function barChart() {
   const xScale = d3
     .scaleTime()
     .domain(d3.extent(dataset, xAccessor))
-    .range([0, dimensions.boundedWidth]);
+    .range([0, dimensions.boundedWidth])
 
   const yScale = d3
     .scaleLinear()
@@ -65,7 +65,8 @@ async function barChart() {
     .attr('id', 'tooltip')
     .style('visibility', 'hidden');
 
-  const barWidth = dimensions.boundedWidth / dataset.length;
+
+  const barWidth = (dimensions.boundedWidth / dataset.length);
 
   const barRects = bounds
     .selectAll('rect')
@@ -79,14 +80,14 @@ async function barChart() {
     .attr('class', 'bar')
     .attr('data-date', (d) => d[0])
     .attr('data-gdp', (d) => yAccessor(d))
-    .attr('fill', 'cornflowerblue')
+    .attr('fill', 'mediumseagreen')
     .on('mouseover', onMouseOver)
     .on('mouseleave', onMouseLeave);
 
   function onMouseOver(d) {
-    tooltip.transition().duration(200).style('visibility', 'visible');
+     tooltip.transition().duration(200).style('visibility', 'visible');
     tooltip
-      .html('Date: ' + d[0] + '<br> GDP: $ ' + d[1] + ' billion')
+      .html('Date: ' + '<br>' + d[0].substring(0, 4) + " " + parseQuarter(d[0]) + '<br> GDP: $ ' + d[1] + ' billion')
       .style('left', d3.event.pageX + 'px')
       .style('top', d3.event.pageY - 28 + 'px')
       .attr('data-date', d[0])
@@ -97,6 +98,18 @@ async function barChart() {
     tooltip.transition().duration(200).style('visibility', 'hidden');
   }
 
+  function parseQuarter(date) {
+    const quarter = (date.substring(5, 7));
+    if (quarter == '01') {
+      return 'Q1';
+    } else if (quarter == '04') {
+      return 'Q2';
+    } else if (quarter == '07') {
+      return 'Q3';
+    } else {
+      return 'Q4'
+    }
+  }
   // 5. Create axes
 
   const xAxisGenerator = d3.axisBottom().scale(xScale).ticks(12);

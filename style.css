@@ -1,5 +1,5 @@
 .bar:hover {
-  fill: blue;
+  fill: green;
 }
 
 div#tooltip {
@@ -13,4 +13,9 @@ div#tooltip {
   border: 0px;
   border-radius: 8px;
   pointer-events: none;
+}
+
+#title {
+  text-align: center;
+  font-family: 'Book Antiqua', sans-serif;
 }
